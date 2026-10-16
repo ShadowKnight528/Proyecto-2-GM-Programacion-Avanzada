@@ -35,16 +35,47 @@ public class Nave4 {
 
     }
     public void draw(SpriteBatch batch, PantallaJuego juego){
-        float x =  spr.getX();
-        float y =  spr.getY();
+        float x = spr.getX();
+        float y = spr.getY();
+        
         if (!herido) {
-	        // que se mueva con teclado
-	        if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) xVel--;
-	        if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) xVel++;
-        	if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) yVel--;     
-	        if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) yVel++;
-        	
-	     /*   if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) spr.setRotation(++rotacion);
+            float aceleracion = 1.0f;
+            if (Gdx.input.isKeyPressed(Input.Keys.A))  xVel -= aceleracion;
+            if (Gdx.input.isKeyPressed(Input.Keys.D)) xVel += aceleracion;
+            if (Gdx.input.isKeyPressed(Input.Keys.S))  yVel -= aceleracion;      
+            if (Gdx.input.isKeyPressed(Input.Keys.W))    yVel += aceleracion;
+            
+            float friccion = 0.75f;
+            xVel *= friccion;
+            yVel *= friccion;
+            
+            float velocidadMax = 5.0f;
+            xVel = MathUtils.clamp(xVel, -velocidadMax, velocidadMax);
+            yVel = MathUtils.clamp(yVel, -velocidadMax, velocidadMax);
+
+            float nuevaX = x + xVel;
+            float nuevaY = y + yVel;
+            
+            if (nuevaX < 0) {
+                nuevaX = 0;
+                xVel *= -0.8f;
+            } else if (nuevaX + spr.getWidth() > Gdx.graphics.getWidth()) {
+                nuevaX = Gdx.graphics.getWidth() - spr.getWidth();
+                xVel *= -0.8f;
+            }
+            
+            if (nuevaY < 0) {
+                nuevaY = 0;
+                yVel *= -0.8f;
+            } else if (nuevaY + spr.getHeight() > Gdx.graphics.getHeight()) {
+                nuevaY = Gdx.graphics.getHeight() - spr.getHeight();
+                yVel *= -0.8f;
+            }
+            
+            spr.setPosition(nuevaX, nuevaY);   
+            spr.draw(batch);
+            
+            /*   if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) spr.setRotation(++rotacion);
 	        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) spr.setRotation(--rotacion);
 	        
 	        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
@@ -59,29 +90,23 @@ public class Nave4 {
 	        }*/
 	        
 	        // que se mantenga dentro de los bordes de la ventana
-	        if (x+xVel < 0 || x+xVel+spr.getWidth() > Gdx.graphics.getWidth())
-	        	xVel*=-1;
-	        if (y+yVel < 0 || y+yVel+spr.getHeight() > Gdx.graphics.getHeight())
-	        	yVel*=-1;
-	        
-	        spr.setPosition(x+xVel, y+yVel);   
-         
- 		    spr.draw(batch);
+            
         } else {
-           spr.setX(spr.getX()+MathUtils.random(-2,2));
- 		   spr.draw(batch); 
- 		  spr.setX(x);
- 		   tiempoHerido--;
- 		   if (tiempoHerido<=0) herido = false;
- 		 }
-        // disparo
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {         
-          Bullet  bala = new Bullet(spr.getX()+spr.getWidth()/2-5,spr.getY()+ spr.getHeight()-5,0,3,txBala);
-	      juego.agregarBala(bala);
-	      soundBala.play();
+            // Efecto cuando está herida
+            spr.setX(spr.getX() + MathUtils.random(-2, 2));
+            spr.draw(batch);  
+            spr.setX(x);
+            tiempoHerido--;
+            if (tiempoHerido <= 0) herido = false;
         }
-       
+        
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {         
+            Bullet bala = new Bullet(spr.getX() + spr.getWidth() / 2 - 5, spr.getY() + spr.getHeight() - 5, 0, 3, txBala);
+            juego.agregarBala(bala);
+            soundBala.play();
+        }
     }
+    
       
     public boolean checkCollision(Ball2 b) {
         if(!herido && b.getArea().overlaps(spr.getBoundingRectangle())){
