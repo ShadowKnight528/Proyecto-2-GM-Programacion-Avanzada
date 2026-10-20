@@ -26,12 +26,15 @@ public class PantallaJuego implements Screen {
 	private Texture txPowerUp;
 	private Texture txBalaAbanico;
 	private Sound sonidoBalaAbanico;
+	private Texture txRayoLaser;
+	private Sound sonidoRayoLaser;
 	private Random random = new Random();
 	
 	private Nave4 nave;
 	private ArrayList<Ball2> balls1 = new ArrayList<>();
 	private ArrayList<Ball2> balls2 = new ArrayList<>();
 	private ArrayList<Bullet> balas = new ArrayList<>();
+	private ArrayList<RayoLaser> rayosLaser = new ArrayList<>();
 	
 	// Textura para los recuadros del HUD
 	private Texture txPanelHud;
@@ -83,6 +86,8 @@ public class PantallaJuego implements Screen {
 	    txPowerUp = new Texture(Gdx.files.internal("power_up.png"));
 	    txBalaAbanico = new Texture(Gdx.files.internal("bala_abanico.png"));
 	    sonidoBalaAbanico = Gdx.audio.newSound(Gdx.files.internal("sonido_abanico.wav"));
+	    txRayoLaser = new Texture(Gdx.files.internal("laser.png"));
+	    sonidoRayoLaser = Gdx.audio.newSound(Gdx.files.internal("sonido_laser.mp3"));
 	}
     
 	public void dibujaEncabezado() {
@@ -153,15 +158,17 @@ public class PantallaJuego implements Screen {
 					j--;
 					ManejadorJuego.getInstance().agregarPuntos(10);
 
-					// Probabilidad del 15% de generar una caja de power-up
+					// Probabilidad del 15% de generar un power-up
 					if (random.nextFloat() < 0.15f) {
-						PowerUp nuevoPowerUp = new PowerUpAbanico(
-							posX, posY, 
-							txPowerUp, 
-							txBalaAbanico, 
-							sonidoBalaAbanico
-						);
-						powerUps.add(nuevoPowerUp);
+					    PowerUp nuevoPowerUp;
+
+					    // 50% de probabilidad de que salga disparo en forma de abanico o disparo laser
+					    if (random.nextBoolean()) {
+					        nuevoPowerUp = new PowerUpAbanico(posX, posY, txPowerUp, txBalaAbanico, sonidoBalaAbanico);
+					    } else {
+					        nuevoPowerUp = new PowerUpLaser(posX, posY, txPowerUp, txRayoLaser, sonidoRayoLaser);
+					    }
+					    powerUps.add(nuevoPowerUp);
 					}
 				}    
 			}
@@ -230,6 +237,36 @@ public class PantallaJuego implements Screen {
 			dispose();
 			return;
 		}
+		
+		// 12. ACTUALIZAR Y MOVER LASERES DEL JUGADOR
+		for (int i = 0; i < rayosLaser.size(); i++) {
+		    RayoLaser l = rayosLaser.get(i);
+		    l.update();
+		    
+		    for (int j = 0; j < balls1.size(); j++) {    
+		        if (l.checkCollision(balls1.get(j))) {        
+		            explosionSound.play();
+		            float posX = balls1.get(j).getArea().x;
+		            float posY = balls1.get(j).getArea().y;
+		            
+		            // Destruye el asteroide, otorga puntos y el laser continua su camino
+		            balls1.remove(j);
+		            balls2.remove(j);
+		            j--;
+		            ManejadorJuego.getInstance().agregarPuntos(10);
+		        }    
+		    }
+		    
+		    if (l.fueDestruido()) {
+		        rayosLaser.remove(l);
+		        i--; 
+		    }
+		}
+
+		// 13. DIBUJAR LASERES
+		for (RayoLaser l : rayosLaser) {        
+		    l.draw(batch);
+		}
 
 		batch.end();
 	}
@@ -237,6 +274,10 @@ public class PantallaJuego implements Screen {
     public boolean agregarBala(Bullet bb) {
     	return balas.add(bb);
     }
+    
+    public boolean agregarRayoLaser(RayoLaser rl) {
+        return rayosLaser.add(rl);
+    } 
 	
 	@Override
 	public void show() {}
@@ -268,6 +309,12 @@ public class PantallaJuego implements Screen {
 		if (sonidoBalaAbanico != null) {
 			sonidoBalaAbanico.dispose();
 		}
+		if (txRayoLaser != null) {
+			txRayoLaser.dispose();
+		}
+	    if (sonidoRayoLaser != null) {
+	    	sonidoRayoLaser.dispose();
+	    }
 	}
 	
 	public void agregarAsteroide(Ball2 b) {
