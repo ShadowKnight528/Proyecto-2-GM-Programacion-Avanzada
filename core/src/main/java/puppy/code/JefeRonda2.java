@@ -18,7 +18,7 @@ public class JefeRonda2 extends TemplateJefe {
     @Override
     protected void moverPatron(float delta) {
         tiempoTotal += delta;
-        float centroX = Gdx.graphics.getWidth() / 2f - spr.getWidth() / 2f;
+        float centroX = 800f / 2f - spr.getWidth() / 2f;
         x = centroX + (float) Math.sin(tiempoTotal * velocidadMovimiento) * 150f;
     }
 

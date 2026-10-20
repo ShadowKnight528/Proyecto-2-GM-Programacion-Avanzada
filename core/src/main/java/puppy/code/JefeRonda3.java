@@ -21,8 +21,8 @@ public class JefeRonda3 extends TemplateJefe {
     protected void moverPatron(float delta) {
         tiempoTotal += delta;
         // Movimiento compuesto en X e Y (Patrón en 8 u óvalo flotante)
-        float centroX = Gdx.graphics.getWidth() / 2f - spr.getWidth() / 2f;
-        float centroY = Gdx.graphics.getHeight() - 160;
+        float centroX = 800f / 2f - spr.getWidth() / 2f;
+        float centroY = 640f - 160;
 
         x = centroX + (float) Math.sin(tiempoTotal * velocidadMovimiento) * 150f;
         y = centroY + (float) Math.cos(tiempoTotal * velocidadMovimiento * 2f) * 30f;

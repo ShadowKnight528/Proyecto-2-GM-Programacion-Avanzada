@@ -16,7 +16,7 @@ public class DisparoDefaultStrategy implements DisparoStrategy {
     @Override
     public void disparar(float x, float y, PantallaJuego juego) {
         juego.agregarBala(new Bullet(x, y, 0, 3, txBala));
-        if (sonidoBala != null) sonidoBala.play();
+        if (sonidoBala != null) sonidoBala.play(0.2f);
     }
 }
 

@@ -18,6 +18,6 @@ public class DisparoLaserStrategy implements DisparoStrategy {
     @Override
     public void disparar(float x, float y, PantallaJuego juego) {
         juego.agregarBala(new RayoLaser(x, y, 0, (int)velocidad, txBala, 10, 30));
-        if (sonidoBala != null) sonidoBala.play();
+        if (sonidoBala != null) sonidoBala.play(0.2f);
     }
 }

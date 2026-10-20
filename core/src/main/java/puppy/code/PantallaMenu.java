@@ -35,15 +35,9 @@ public class PantallaMenu implements Screen {
 		game.getBatch().begin();
 		
 		// Dibujamos el fondo cubriendo toda la pantalla virtual (800x640)
-		game.getBatch().draw(txFondo, 0, 0, 800, 640);
+		game.getBatch().draw(txFondo, 250, 100, 300, 440);
 
-		// Textos centrados o ubicados limpiamente en la pantalla virtual
-		game.getFont().getData().setScale(2f);
-		game.getFont().draw(game.getBatch(), "Vito Adventures", 250, 400);
-		
-		game.getFont().getData().setScale(1.2f);
-		game.getFont().draw(game.getBatch(), "Press any key to start...", 260, 300);
-	
+		// Textos centrados o ubicados limpiamente en la pantalla virtual	
 		game.getBatch().end();
 
 		if (Gdx.input.isTouched() || Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY)) {

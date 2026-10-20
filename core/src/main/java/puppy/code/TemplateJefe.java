@@ -1,6 +1,8 @@
 package puppy.code;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -10,19 +12,41 @@ public abstract class TemplateJefe {
     protected float x, y;
     protected int vida;
     protected int vidaMaxima;
+    
+    // Texturas para la barra de vida
+    private static Texture txBarraFondo;
+    private static Texture txBarraVida;
 
     public TemplateJefe(Texture textura, int vidaInicial) {
         this.spr = new Sprite(textura);
         this.vida = vidaInicial;
         this.vidaMaxima = vidaInicial;
-        this.spr.setSize(120, 120); // Tamaño imponente para destacar sobre la nave
+        this.spr.setSize(120, 120);
         
         this.x = 800 / 2f - spr.getWidth() / 2f;
-        this.y = 640 - 120; // Justo debajo del borde superior virtual
+        this.y = 640 - 150;
         this.spr.setPosition(x, y);
+        
+        inicializarTexturasBarra();
     }
 
-    // 🌟 TEMPLATE METHOD: Define la secuencia fija por fotograma
+    private void inicializarTexturasBarra() {
+        if (txBarraFondo == null) {
+            Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+            pixmap.setColor(Color.DARK_GRAY);
+            pixmap.fill();
+            txBarraFondo = new Texture(pixmap);
+            pixmap.dispose();
+        }
+        if (txBarraVida == null) {
+            Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+            pixmap.setColor(Color.FIREBRICK);
+            pixmap.fill();
+            txBarraVida = new Texture(pixmap);
+            pixmap.dispose();
+        }
+    }
+
     public final void update(float delta, PantallaJuego juego) {
         moverPatron(delta);
         spr.setPosition(x, y);
@@ -34,17 +58,39 @@ public abstract class TemplateJefe {
 
     public void draw(SpriteBatch batch) {
         spr.draw(batch);
+        
+        // Dibujar barra de vida del jefe en la parte superior central
+        float barraAncho = 300f;
+        float barraAlto = 16f;
+        float barraX = 800f / 2f - barraAncho / 2f;
+        float barraY = 640f - 30f;
+        
+        batch.draw(txBarraFondo, barraX, barraY, barraAncho, barraAlto);
+        float porcentajeVida = (float) vida / vidaMaxima;
+        if (porcentajeVida < 0) porcentajeVida = 0;
+        batch.draw(txBarraVida, barraX, barraY, barraAncho * porcentajeVida, barraAlto);
     }
 
-    // ⚙️ El jefe se encarga internamente de saber qué tipo de jefe instanciar según la ronda
+    public boolean recibirDanio(int cantidad, PantallaJuego juego) {
+        vida -= cantidad;
+        // Probabilidad de soltar un power-up al recibir daño (25%)
+        if (Math.random() < 0.25) {
+            juego.soltarPowerUp(spr.getX() + spr.getWidth() / 2f, spr.getY());
+        }
+        return vida <= 0;
+    }
+
+    public boolean estaDerrotado() {
+        return vida <= 0;
+    }
+
     public static TemplateJefe crearParaRonda(int ronda) {
         if (ronda == 1) {
-            return new Jefe(new Texture(Gdx.files.internal("jefe1.png")), 100, 1.5f);
+            return new Jefe(new Texture(Gdx.files.internal("jefe1.png")), 50, 1.5f);
         } else if (ronda == 2) {
-            return new JefeRonda2(new Texture(Gdx.files.internal("jefe2.png")), 200, 2.0f);
+            return new JefeRonda2(new Texture(Gdx.files.internal("jefe2.png")), 100, 2.0f);
         } else {
-            // Ronda 3 en adelante: permanece este jefe hasta que el jugador pierda
-            return new JefeRonda3(new Texture(Gdx.files.internal("jefe3.png")), 400, 1.2f);
+            return new JefeRonda3(new Texture(Gdx.files.internal("jefe3.png")), 150, 1.2f);
         }
     }
 }

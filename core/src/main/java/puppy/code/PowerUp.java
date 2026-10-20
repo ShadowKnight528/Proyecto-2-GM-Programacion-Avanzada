@@ -8,12 +8,17 @@ import com.badlogic.gdx.math.Rectangle;
 public abstract class PowerUp {
     protected Sprite spr;
     protected boolean tomado = false;
+    protected float velocidadCaida = 2.0f; // Velocidad de descenso vertical
 
-    // Recibe la textura genérica (ej: la caja misteriosa)
     public PowerUp(float x, float y, Texture textureGenerica) {
-        this.spr = new Sprite(textureGenerica);
-        this.spr.setPosition(x, y);
-        this.spr.setBounds(x, y, 30, 30);
+        spr = new Sprite(textureGenerica);
+        spr.setPosition(x, y);
+        spr.setBounds(x, y, 35, 35);
+    }
+
+    public void update() {
+        // Caída vertical constante hacia abajo
+        spr.setY(spr.getY() - velocidadCaida);
     }
 
     public void draw(SpriteBatch batch) {
@@ -22,22 +27,26 @@ public abstract class PowerUp {
         }
     }
 
-    public final boolean checkCollision(Nave4 nave) {
+    public Rectangle getArea() {
+        return spr.getBoundingRectangle();
+    }
+
+    public boolean checkCollision(Nave4 nave) {
         if (!tomado && nave.checkCollision(this)) {
             tomado = true;
+            aplicarEfecto(nave);
             return true;
         }
         return false;
     }
 
-    public Rectangle getArea() {
-        return spr.getBoundingRectangle();
+    public boolean estaFueraDePantalla() {
+        return spr.getY() + spr.getHeight() < 0;
     }
-
-    // Cada suptipo implementa su propio efecto
-    public abstract void aplicarEfecto(Nave4 nave);
 
     public boolean isTomado() {
         return tomado;
     }
+
+    public abstract void aplicarEfecto(Nave4 nave);
 }

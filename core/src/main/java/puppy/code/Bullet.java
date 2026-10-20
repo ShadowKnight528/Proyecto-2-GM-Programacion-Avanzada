@@ -56,5 +56,12 @@ public class Bullet {
 	    }
 	    
 	    public boolean isDestroyed() {return destroyed;}
-	
+	    
+	    public boolean checkCollisionConJefe(TemplateJefe jefe) {
+	        if (spr.getBoundingRectangle().overlaps(jefe.spr.getBoundingRectangle())) {
+	            this.destroyed = true;
+	            return true;
+	        }
+	        return false;
+	    }
 }
