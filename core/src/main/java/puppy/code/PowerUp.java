@@ -9,8 +9,9 @@ public abstract class PowerUp {
     protected Sprite spr;
     protected boolean tomado = false;
 
-    public PowerUp(float x, float y, Texture texture) {
-        this.spr = new Sprite(texture);
+    // Recibe la textura genérica (ej: la caja misteriosa)
+    public PowerUp(float x, float y, Texture textureGenerica) {
+        this.spr = new Sprite(textureGenerica);
         this.spr.setPosition(x, y);
         this.spr.setBounds(x, y, 30, 30);
     }
@@ -21,7 +22,6 @@ public abstract class PowerUp {
         }
     }
 
-    // El powerup delega a la nave la accion de comprobar la colision
     public boolean checkCollision(Nave4 nave) {
         if (!tomado && nave.checkCollision(this)) {
             tomado = true;
@@ -30,11 +30,11 @@ public abstract class PowerUp {
         return false;
     }
 
-    // Metodo para que la nave pueda obtener el area de colision
     public Rectangle getArea() {
         return spr.getBoundingRectangle();
     }
 
+    // Cada suptipo implementa su propio efecto
     public abstract void aplicarEfecto(Nave4 nave);
 
     public boolean isTomado() {

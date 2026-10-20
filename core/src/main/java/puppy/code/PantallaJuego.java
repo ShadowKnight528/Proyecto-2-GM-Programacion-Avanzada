@@ -1,6 +1,7 @@
 package puppy.code;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -10,6 +11,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.Array;
 
 public class PantallaJuego implements Screen {
 
@@ -19,12 +21,19 @@ public class PantallaJuego implements Screen {
 	private Sound explosionSound;
 	private TemplateJefe jefeActual;
 	
+	// Elementos de Power-Ups
+	private Array<PowerUp> powerUps = new Array<>();
+	private Texture txPowerUp;
+	private Texture txBalaAbanico;
+	private Sound sonidoBalaAbanico;
+	private Random random = new Random();
+	
 	private Nave4 nave;
 	private ArrayList<Ball2> balls1 = new ArrayList<>();
 	private ArrayList<Ball2> balls2 = new ArrayList<>();
 	private ArrayList<Bullet> balas = new ArrayList<>();
 	
-	// Textura para los recuadros del HUD
+	// Textura para los recuadros del HUD (de tu compañero)
 	private Texture txPanelHud;
 
 	public PantallaJuego(SpaceNavigation game) {
@@ -44,7 +53,7 @@ public class PantallaJuego implements Screen {
 		explosionSound = Gdx.audio.newSound(Gdx.files.internal("explosion.ogg"));
 		explosionSound.setVolume(1, 0.5f);
 		
-		// Recuadro café levemente más claro que el fondo (0.06, 0.03, 0.01)
+		// Recuadro café para el HUD (de tu compañero)
 		Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
 		pixmap.setColor(0.18f, 0.11f, 0.05f, 0.85f); 
 		pixmap.fill();
@@ -69,6 +78,11 @@ public class PantallaJuego implements Screen {
 	            agregarAsteroide(b);
 	        }
 	    }
+	    
+	    // Cargar recursos de Power-Ups
+	    txPowerUp = new Texture(Gdx.files.internal("power_up.png"));
+	    txBalaAbanico = new Texture(Gdx.files.internal("bala_abanico.png"));
+	    sonidoBalaAbanico = Gdx.audio.newSound(Gdx.files.internal("sonido_abanico.wav"));
 	}
     
 	public void dibujaEncabezado() {
@@ -77,34 +91,29 @@ public class PantallaJuego implements Screen {
 	    int segundos = (int) (tiempoRestante % 60);
 	    String tiempoFormateado = String.format("%02d:%02d", minutos, segundos);
 	    
-	    // Ajuste de escala de la fuente
+	    // Ajuste de escala de la fuente (HUD de tu compañero)
 	    game.getFont().getData().setScale(0.9f);
 	    
-	    // Posicionamiento en el margen inferior derecho (Coordenadas virtuales de la cámara: X=800, Y=640)
 	    float xBase = 460f; 
 	    float yPanel = 10f;
 	    float altoPanel = 65f;
 	    float anchoPanel = 325f;
 	    
-	    // 1. Recuadro de fondo único para todo el HUD en la esquina inferior derecha
+	    // 1. Recuadro de fondo único para el HUD en la esquina inferior derecha
 	    batch.draw(txPanelHud, xBase, yPanel, anchoPanel, altoPanel);
 	    
 	    // 2. Letras blancas sobre el recuadro
 	    game.getFont().setColor(1f, 1f, 1f, 1f);
-	    
-	    // Línea 1 (Arriba): Vidas, Ronda y Tiempo
 	    game.getFont().draw(batch, "Vidas: " + nave.getVidas() + "  |  Ronda: " + ManejadorJuego.getInstance().getRonda() + "  |  Time: " + tiempoFormateado, xBase + 12f, yPanel + 52f);
-	    
-	    // Línea 2 (Abajo): Puntuación y Récord
 	    game.getFont().draw(batch, "Score: " + ManejadorJuego.getInstance().getScore() + "  |  Hi-Score: " + ManejadorJuego.getInstance().getHighScore(), xBase + 12f, yPanel + 26f);
 	}
 
 	@Override
 	public void render(float delta) {
+		// Color de fondo de tu compañero
 		Gdx.gl.glClearColor(0.06f, 0.03f, 0.01f, 1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
-		// Asegurar que el batch use las dimensiones de la cámara ortográfica (800x640)
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
 		
@@ -126,19 +135,35 @@ public class PantallaJuego implements Screen {
 
 		batch.begin();
         
-		// 3. ACTUALIZAR Y MOVER BALAS DEL JUGADOR
+		// 3. ACTUALIZAR Y MOVER BALAS DEL JUGADOR (CON COLISIONES Y SPAWN DE POWER-UPS)
 		for (int i = 0; i < balas.size(); i++) {
 			Bullet b = balas.get(i);
 			b.update();
 			
 			for (int j = 0; j < balls1.size(); j++) {    
-				if (b.checkCollision(balls1.get(j))) {          
+				if (b.checkCollision(balls1.get(j))) {        
 					explosionSound.play();
+					
+					// Coordenadas del asteroide destruido para el power-up
+					float posX = balls1.get(j).getArea().x;
+					float posY = balls1.get(j).getArea().y;
+					
 					balls1.remove(j);
 					balls2.remove(j);
 					j--;
 					ManejadorJuego.getInstance().agregarPuntos(10);
-				}   	  
+
+					// Probabilidad del 15% de generar una caja de power-up
+					if (random.nextFloat() < 0.15f) {
+						PowerUp nuevoPowerUp = new PowerUpAbanico(
+							posX, posY, 
+							txPowerUp, 
+							txBalaAbanico, 
+							sonidoBalaAbanico
+						);
+						powerUps.add(nuevoPowerUp);
+					}
+				}    
 			}
             
 			if (b.isDestroyed()) {
@@ -153,7 +178,7 @@ public class PantallaJuego implements Screen {
 		}
 
 		// 5. DIBUJAR BALAS DEL JUGADOR
-		for (Bullet b : balas) {       
+		for (Bullet b : balas) {        
 			b.draw(batch);
 		}
 
@@ -172,16 +197,27 @@ public class PantallaJuego implements Screen {
 				balls1.remove(i);
 				balls2.remove(i);
 				i--;
-			}   	  
+			}    
 		}
 
 		// 8. DIBUJAR LA NAVE
 		nave.draw(batch, this);
 		
-		// 9. DIBUJAR EL HUD (Abajo a la derecha)
+		// 9. ACTUALIZAR Y DIBUJAR POWER-UPS
+		for (int i = 0; i < powerUps.size; i++) {
+		    PowerUp p = powerUps.get(i);
+		    p.draw(batch);
+		    
+		    if (p.checkCollision(nave)) {
+		        powerUps.removeIndex(i);
+		        i--;
+		    }
+		}
+		
+		// 10. DIBUJAR EL HUD (Abajo a la derecha)
 		dibujaEncabezado();
       
-		// 10. VERIFICAR GAME OVER
+		// 11. VERIFICAR GAME OVER
 		if (nave.estaDestruido()) {
 			int scoreActual = ManejadorJuego.getInstance().getScore();
 			if (scoreActual > ManejadorJuego.getInstance().getHighScore()){
@@ -222,6 +258,15 @@ public class PantallaJuego implements Screen {
 		this.explosionSound.dispose();
 		if (txPanelHud != null) {
 			txPanelHud.dispose();
+		}
+		if (txPowerUp != null) {
+			txPowerUp.dispose();
+		}
+		if (txBalaAbanico != null) {
+			txBalaAbanico.dispose();
+		}
+		if (sonidoBalaAbanico != null) {
+			sonidoBalaAbanico.dispose();
 		}
 	}
 	

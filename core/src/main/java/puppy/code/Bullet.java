@@ -19,6 +19,15 @@ public class Bullet {
 	        this.xSpeed = xSpeed;
 	        this.ySpeed = ySpeed;
 	    }
+	    
+	    public Bullet(float x, float y, int xSpeed, int ySpeed, Texture tx, float width, float height) {
+	    	spr = new Sprite(tx);
+	    	spr.setPosition(x, y);
+	    	spr.setSize(width, height); // Ajusta el tamaño de la bala debido a problemas con el sprite
+	        this.xSpeed = xSpeed;
+	        this.ySpeed = ySpeed;
+	    }
+	    
 	    public void update() {
 	        spr.setPosition(spr.getX()+xSpeed, spr.getY()+ySpeed);
 	        if (spr.getX() < 0 || spr.getX()+spr.getWidth() > Gdx.graphics.getWidth()) {

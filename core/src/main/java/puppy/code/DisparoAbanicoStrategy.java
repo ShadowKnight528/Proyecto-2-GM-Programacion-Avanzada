@@ -32,7 +32,7 @@ public class DisparoAbanicoStrategy implements DisparoStrategy {
             double rad = Math.toRadians(anguloInicial + paso * i);
             int vx = (int) Math.rint(Math.cos(rad) * velocidad);
             int vy = (int) Math.rint(Math.sin(rad) * velocidad);
-            juego.agregarBala(new Bullet(x, y, vx, vy, txBala));
+            juego.agregarBala(new Bullet(x, y, vx, vy, txBala, 16, 16));
         }
         if (sonidoBala != null) sonidoBala.play();   // un solo sonido por ráfaga
     }

@@ -8,9 +8,9 @@ public class PowerUpAbanico extends PowerUp {
     private final Texture txBalaAbanico;
     private final Sound sonidoAbanico;
 
-    // Recibe los recursos necesarios y llama al constructor de la clase abstracta
-    public PowerUpAbanico(float x, float y, Texture txPowerUp, Texture txBalaAbanico, Sound sonidoAbanico) {
-        super(x, y, txPowerUp); // Inicializa el sprite y la posicion en la clase padre
+    // Recibe la textura del power up generico y sus recursos necesarios para el disparo
+    public PowerUpAbanico(float x, float y, Texture txCajaMisteriosa, Texture txBalaAbanico, Sound sonidoAbanico) {
+        super(x, y, txCajaMisteriosa); // Muestra la textura generica de power up en pantalla
         this.txBalaAbanico = txBalaAbanico;
         this.sonidoAbanico = sonidoAbanico;
     }
