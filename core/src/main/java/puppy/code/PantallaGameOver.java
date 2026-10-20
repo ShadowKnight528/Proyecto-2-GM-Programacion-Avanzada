@@ -21,7 +21,7 @@ public class PantallaGameOver implements Screen {
 
 	@Override
 	public void render(float delta) {
-		ScreenUtils.clear(0, 0, 0.2f, 1);
+		ScreenUtils.clear(0.06f, 0.03f, 0.01f, 1f);
 
 		camera.update();
 		game.getBatch().setProjectionMatrix(camera.combined);

@@ -17,8 +17,8 @@ public abstract class TemplateJefe {
         this.vidaMaxima = vidaInicial;
         this.spr.setSize(120, 120); // Tamaño imponente para destacar sobre la nave
         
-        this.x = Gdx.graphics.getWidth() / 2f - spr.getWidth() / 2f;
-        this.y = Gdx.graphics.getHeight() - 120;
+        this.x = 800 / 2f - spr.getWidth() / 2f;
+        this.y = 640 - 120; // Justo debajo del borde superior virtual
         this.spr.setPosition(x, y);
     }
 
