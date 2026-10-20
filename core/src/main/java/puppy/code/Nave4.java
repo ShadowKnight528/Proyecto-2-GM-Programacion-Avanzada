@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 
 
-
 public class Nave4 {
 	
 	private boolean destruida = false;
@@ -18,20 +17,20 @@ public class Nave4 {
     private float yVel = 0;
     private Sprite spr;
     private Sound sonidoHerido;
-    private Sound soundBala;
-    private Texture txBala;
+   // private Sound soundBala;
+   // private Texture txBala;
     private boolean herido = false;
     private int tiempoHeridoMax=50;
     private int tiempoHerido;
+    private DisparoStrategy modoDeDisparo;
     
-    public Nave4(int x, int y, Texture tx, Sound soundChoque, Texture txBala, Sound soundBala) {
+    public Nave4(int x, int y, Texture tx, Sound soundChoque, Texture txBala, Sound sonidoBala) {
     	sonidoHerido = soundChoque;
-    	this.soundBala = soundBala;
-    	this.txBala = txBala;
     	spr = new Sprite(tx);
     	spr.setPosition(x, y);
     	//spr.setOriginCenter();
     	spr.setBounds(x, y, 45, 45);
+    	modoDeDisparo = new DisparoDefaultStrategy(txBala, sonidoBala);
 
     }
     public void draw(SpriteBatch batch, PantallaJuego juego){
@@ -100,10 +99,14 @@ public class Nave4 {
             if (tiempoHerido <= 0) herido = false;
         }
         
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {         
-            Bullet bala = new Bullet(spr.getX() + spr.getWidth() / 2 - 5, spr.getY() + spr.getHeight() - 5, 0, 3, txBala);
-            juego.agregarBala(bala);
-            soundBala.play();
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {       
+        	float xDisparo = spr.getX() + spr.getWidth() / 2 - 5;
+            float yDisparo = spr.getY() + spr.getHeight() - 5;
+        	if (modoDeDisparo != null) {
+            	modoDeDisparo.disparar(xDisparo, yDisparo, juego);
+            } else {
+            	throw new NullPointerException("No se ha asignado una estrategia de disparo valida debido a un error");
+            }
         }
     }
     
@@ -137,6 +140,15 @@ public class Nave4 {
         return false;
     }
     
+    // Sobrecarga para comprobar colision con power ups
+    public boolean checkCollision(PowerUp p) {
+        if(!herido && p.getArea().overlaps(spr.getBoundingRectangle())){
+            p.aplicarEfecto(this); // La nave se pasa a sí misma para recibir el efecto
+            return true;
+        }
+        return false;
+    }
+    
     public boolean estaDestruido() {
        return !herido && destruida;
     }
@@ -149,4 +161,5 @@ public class Nave4 {
     public int getX() {return (int) spr.getX();}
     public int getY() {return (int) spr.getY();}
 	public void setVidas(int vidas2) {vidas = vidas2;}
+	public void setEstrategiaDisparo(DisparoStrategy strategy) {modoDeDisparo = strategy;}
 }
