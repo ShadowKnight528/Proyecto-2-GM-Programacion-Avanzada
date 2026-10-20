@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 
 public class SpaceNavigation extends Game {
-	private String nombreJuego = "Space Navigation";
+	private String nombreJuego = "Soyo The Otter";
 	private SpriteBatch batch;
 	private BitmapFont font;
 	private int highScore;	

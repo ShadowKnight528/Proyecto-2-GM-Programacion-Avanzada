@@ -27,13 +27,14 @@ public class PantallaMenu implements Screen {
 		game.getBatch().setProjectionMatrix(camera.combined);
 
 		game.getBatch().begin();
-		game.getFont().draw(game.getBatch(), "Bienvenido a Space Navigation !", 140, 400);
-		game.getFont().draw(game.getBatch(), "Pincha en cualquier lado o presiona cualquier tecla para comenzar ...", 100, 300);
+		game.getFont().draw(game.getBatch(), "Vito Adventures", 140, 400);
+		game.getFont().draw(game.getBatch(), "Press a random key to start...", 100, 300);
 	
 		game.getBatch().end();
 
 		if (Gdx.input.isTouched() || Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY)) {
-			Screen ss = new PantallaJuego(game,1,3,0,1,1,10);
+			ManejadorJuego.getInstance().reiniciarJuego();
+			Screen ss = new PantallaJuego(game);
 			ss.resize(1200, 800);
 			game.setScreen(ss);
 			dispose();
