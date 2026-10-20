@@ -21,7 +21,7 @@ public class PantallaJuego implements Screen {
 	private Sound explosionSound;
 	private TemplateJefe jefeActual;
 	
-	// Elementos de Power-Ups
+	// Elementos para los PowerUp
 	private Array<PowerUp> powerUps = new Array<>();
 	private Texture txPowerUp;
 	private Texture txBalaAbanico;
@@ -33,7 +33,7 @@ public class PantallaJuego implements Screen {
 	private ArrayList<Ball2> balls2 = new ArrayList<>();
 	private ArrayList<Bullet> balas = new ArrayList<>();
 	
-	// Textura para los recuadros del HUD (de tu compañero)
+	// Textura para los recuadros del HUD
 	private Texture txPanelHud;
 
 	public PantallaJuego(SpaceNavigation game) {
@@ -49,11 +49,11 @@ public class PantallaJuego implements Screen {
 		camera = new OrthographicCamera();	
 		camera.setToOrtho(false, 800, 640);
 		
-		// Inicializar efectos de sonido
+		// Efectos de sonido
 		explosionSound = Gdx.audio.newSound(Gdx.files.internal("explosion.ogg"));
 		explosionSound.setVolume(1, 0.5f);
 		
-		// Recuadro café para el HUD (de tu compañero)
+		// Recuadro para el HUD
 		Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
 		pixmap.setColor(0.18f, 0.11f, 0.05f, 0.85f); 
 		pixmap.fill();
@@ -79,7 +79,7 @@ public class PantallaJuego implements Screen {
 	        }
 	    }
 	    
-	    // Cargar recursos de Power-Ups
+	    // Cargar recursos de los PowerUPs
 	    txPowerUp = new Texture(Gdx.files.internal("power_up.png"));
 	    txBalaAbanico = new Texture(Gdx.files.internal("bala_abanico.png"));
 	    sonidoBalaAbanico = Gdx.audio.newSound(Gdx.files.internal("sonido_abanico.wav"));
@@ -91,7 +91,7 @@ public class PantallaJuego implements Screen {
 	    int segundos = (int) (tiempoRestante % 60);
 	    String tiempoFormateado = String.format("%02d:%02d", minutos, segundos);
 	    
-	    // Ajuste de escala de la fuente (HUD de tu compañero)
+	    // Ajuste de escala de la fuente
 	    game.getFont().getData().setScale(0.9f);
 	    
 	    float xBase = 460f; 
@@ -99,7 +99,7 @@ public class PantallaJuego implements Screen {
 	    float altoPanel = 65f;
 	    float anchoPanel = 325f;
 	    
-	    // 1. Recuadro de fondo único para el HUD en la esquina inferior derecha
+	    // 1. Recuadro de fondo para el HUD en la esquina inferior derecha
 	    batch.draw(txPanelHud, xBase, yPanel, anchoPanel, altoPanel);
 	    
 	    // 2. Letras blancas sobre el recuadro
@@ -110,7 +110,7 @@ public class PantallaJuego implements Screen {
 
 	@Override
 	public void render(float delta) {
-		// Color de fondo de tu compañero
+		// Color de fondo
 		Gdx.gl.glClearColor(0.06f, 0.03f, 0.01f, 1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
@@ -120,7 +120,7 @@ public class PantallaJuego implements Screen {
 		// 1. Actualizar el tiempo de la ronda en el Singleton
 		ManejadorJuego.getInstance().actualizarTiempo(delta);
 
-		// 2. Verificar si se acabó el tiempo de la ronda
+		// 2. Verificar si se termino el tiempo de la ronda
 		if (ManejadorJuego.getInstance().seAcaboTiempoRonda()) {
 			ManejadorJuego.getInstance().setVidas(nave.getVidas());
 			ManejadorJuego.getInstance().guardarPosicionNave(nave.getX(), nave.getY());
