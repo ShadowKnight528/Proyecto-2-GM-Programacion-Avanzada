@@ -44,13 +44,15 @@ public class Bullet {
 	    }
 	    
 	    public boolean checkCollision(Ball2 b2) {
-	        if(spr.getBoundingRectangle().overlaps(b2.getArea())){
-	        	// Se destruyen ambos
-	            this.destroyed = true;
+	        if (spr.getBoundingRectangle().overlaps(b2.getArea())) {
+	            efectoAlChocar();
 	            return true;
-	
 	        }
 	        return false;
+	    }
+
+	    protected void efectoAlChocar() {
+	        destroyed = true;   // comportamiento actual: la bala se destruye
 	    }
 	    
 	    public boolean isDestroyed() {return destroyed;}

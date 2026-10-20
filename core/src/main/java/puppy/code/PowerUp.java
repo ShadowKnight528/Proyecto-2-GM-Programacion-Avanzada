@@ -22,7 +22,7 @@ public abstract class PowerUp {
         }
     }
 
-    public boolean checkCollision(Nave4 nave) {
+    public final boolean checkCollision(Nave4 nave) {
         if (!tomado && nave.checkCollision(this)) {
             tomado = true;
             return true;

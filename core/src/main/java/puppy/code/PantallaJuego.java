@@ -34,7 +34,6 @@ public class PantallaJuego implements Screen {
 	private ArrayList<Ball2> balls1 = new ArrayList<>();
 	private ArrayList<Ball2> balls2 = new ArrayList<>();
 	private ArrayList<Bullet> balas = new ArrayList<>();
-	private ArrayList<RayoLaser> rayosLaser = new ArrayList<>();
 	
 	// Textura para los recuadros del HUD
 	private Texture txPanelHud;
@@ -238,47 +237,13 @@ public class PantallaJuego implements Screen {
 			return;
 		}
 		
-		// 12. ACTUALIZAR Y MOVER LASERES DEL JUGADOR
-		for (int i = 0; i < rayosLaser.size(); i++) {
-		    RayoLaser l = rayosLaser.get(i);
-		    l.update();
-		    
-		    for (int j = 0; j < balls1.size(); j++) {    
-		        if (l.checkCollision(balls1.get(j))) {        
-		            explosionSound.play();
-		            float posX = balls1.get(j).getArea().x;
-		            float posY = balls1.get(j).getArea().y;
-		            
-		            // Destruye el asteroide, otorga puntos y el laser continua su camino
-		            balls1.remove(j);
-		            balls2.remove(j);
-		            j--;
-		            ManejadorJuego.getInstance().agregarPuntos(10);
-		        }    
-		    }
-		    
-		    if (l.fueDestruido()) {
-		        rayosLaser.remove(l);
-		        i--; 
-		    }
-		}
-
-		// 13. DIBUJAR LASERES
-		for (RayoLaser l : rayosLaser) {        
-		    l.draw(batch);
-		}
-
 		batch.end();
 	}
     
     public boolean agregarBala(Bullet bb) {
     	return balas.add(bb);
     }
-    
-    public boolean agregarRayoLaser(RayoLaser rl) {
-        return rayosLaser.add(rl);
-    } 
-	
+ 
 	@Override
 	public void show() {}
 
