@@ -125,7 +125,7 @@ public class PantallaJuego implements Screen {
 
 		batch.begin();
         
-		// 1. ACTUALIZAR Y MOVER BALAS DEL JUGADOR (Colisionan con el Jefe)
+		// 1. ACTUALIZAR, MOVER Y VALIDAR COLISIONES DE TODAS LAS BALAS (Default, Abanico y Láser)
 		for (int i = 0; i < balas.size(); i++) {
 			Bullet b = balas.get(i);
 			b.update();
@@ -133,16 +133,17 @@ public class PantallaJuego implements Screen {
 			// Comprobar colisión de la bala con el jefe
 			if (jefeActual != null && b.checkCollisionConJefe(jefeActual)) {
 				explosionSound.play(0.2f);
-				balas.remove(i);
-				i--;
 				ManejadorJuego.getInstance().agregarPuntos(15);
 				
-				// Dañar al jefe (1 de daño por bala)
-				if (jefeActual.recibirDanio(1, this)) {
+				// Dañamos al jefe usando el daño específico de la bala (b.getDanio())
+				if (jefeActual.recibirDanio(b.getDanio(), this)) {
 					// El jefe ha sido derrotado en este mismo impacto
 					ManejadorJuego.getInstance().agregarPuntos(100);
 				}
-			} else if (b.isDestroyed()) {
+			} 
+			
+			// Eliminar la bala si ya cumplió su ciclo o salió de pantalla
+			if (b.isDestroyed()) {
 				balas.remove(b);
 				i--; 
 			}
@@ -154,7 +155,7 @@ public class PantallaJuego implements Screen {
 		}
 
 		// 3. DIBUJAR BALAS DEL JUGADOR
-		for (Bullet b : balas) {       
+		for (Bullet b : balas) {        
 			b.draw(batch);
 		}
 

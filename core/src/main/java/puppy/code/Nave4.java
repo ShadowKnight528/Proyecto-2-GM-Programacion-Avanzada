@@ -19,11 +19,7 @@ public class Nave4 {
     private int tiempoHeridoMax = 50;
     private int tiempoHerido;
     private DisparoStrategy modoDeDisparo;
-    private DisparoStrategy disparoDefault; // Para restaurarlo al expirar el power-up
-    
-    // Temporizador de duración del Power-Up (10 segundos)
-    private float tiempoPowerUpRestante = 0;
-    private boolean tienePowerUpActivo = false;
+    private DisparoStrategy disparoDefault; 
     
     private Texture txBalaDefault;
     private Sound sonidoBalaDefault;
@@ -40,28 +36,38 @@ public class Nave4 {
         modoDeDisparo = disparoDefault;
     }
 
-    public void update(float delta) {
-        // Control del temporizador del Power-Up (10 segundos)
-        if (tienePowerUpActivo) {
-            tiempoPowerUpRestante -= delta;
-            if (tiempoPowerUpRestante <= 0) {
-                tienePowerUpActivo = false;
-                modoDeDisparo = disparoDefault; // Regresa al disparo normal
-            }
+    public void update(float delta, PantallaJuego juego) {
+        // GESTIÓN DEL DISPARO Y CARGA (Evaluado en cada frame de forma directa)
+        if (modoDeDisparo != null) {    
+            float xDisparo = spr.getX() + spr.getWidth() / 2 - 5;
+            float yDisparo = spr.getY() + spr.getHeight() - 5;
+            modoDeDisparo.manejarInput(xDisparo, yDisparo, juego);
+        } else {
+            throw new NullPointerException("No se ha asignado una estrategia de disparo valida");
         }
     }
 
     public void draw(SpriteBatch batch, PantallaJuego juego, float delta){
-        update(delta);
+        // Se actualiza la logica de inputs
+        update(delta, juego);
         
         float x = spr.getX();
         float y = spr.getY();
         
+        // Efecto visual de cargar el ataque (parpadeo rojo / morado)
+        
+        if (modoDeDisparo != null && modoDeDisparo.estaCargando()) {
+            float pulso = (float) Math.sin(System.currentTimeMillis() * 0.01) * 0.5f + 0.5f;
+            spr.setColor(pulso, 0f, 1f - pulso, 1f);
+        } else {
+            spr.setColor(1f, 1f, 1f, 1f);
+        }
+
         if (!herido) {
             float aceleracion = 1.0f;
             if (Gdx.input.isKeyPressed(Input.Keys.A)) xVel -= aceleracion;
             if (Gdx.input.isKeyPressed(Input.Keys.D)) xVel += aceleracion;
-            if (Gdx.input.isKeyPressed(Input.Keys.S)) yVel -= aceleracion;      
+            if (Gdx.input.isKeyPressed(Input.Keys.S)) yVel -= aceleracion;     
             if (Gdx.input.isKeyPressed(Input.Keys.W)) yVel += aceleracion;
             
             float friccion = 0.75f;
@@ -91,7 +97,7 @@ public class Nave4 {
                 yVel *= -0.8f;
             }
             
-            spr.setPosition(nuevaX, nuevaY);   
+            spr.setPosition(nuevaX, nuevaY);    
             spr.draw(batch);
         } else {
             spr.setX(spr.getX() + MathUtils.random(-2, 2));
@@ -99,16 +105,6 @@ public class Nave4 {
             spr.setX(x);
             tiempoHerido--;
             if (tiempoHerido <= 0) herido = false;
-        }
-        
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {       
-            float xDisparo = spr.getX() + spr.getWidth() / 2 - 5;
-            float yDisparo = spr.getY() + spr.getHeight() - 5;
-            if (modoDeDisparo != null) {
-                modoDeDisparo.disparar(xDisparo, yDisparo, juego);
-            } else {
-                throw new NullPointerException("No se ha asignado una estrategia de disparo valida");
-            }
         }
     }
       
@@ -157,7 +153,5 @@ public class Nave4 {
     
     public void setEstrategiaDisparo(DisparoStrategy strategy) {
         modoDeDisparo = strategy;
-        tienePowerUpActivo = true;
-        tiempoPowerUpRestante = 10.0f; // 10 segundos de duración del power-up
     }
 }

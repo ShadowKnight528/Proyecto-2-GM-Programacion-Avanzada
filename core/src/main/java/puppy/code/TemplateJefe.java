@@ -86,11 +86,29 @@ public abstract class TemplateJefe {
 
     public static TemplateJefe crearParaRonda(int ronda) {
         if (ronda == 1) {
-            return new Jefe(new Texture(Gdx.files.internal("jefe1.png")), 50, 1.5f);
+            return new JefeBuilder()
+                .setTextura(new Texture(Gdx.files.internal("jefe1.png")))
+                .setVida(50)
+                .setVelocidad(1.5f)
+                .setTamaño(120, 120)
+                .setTipo(1)
+                .build();
         } else if (ronda == 2) {
-            return new JefeRonda2(new Texture(Gdx.files.internal("jefe2.png")), 100, 2.0f);
+            return new JefeBuilder()
+                .setTextura(new Texture(Gdx.files.internal("jefe2.png")))
+                .setVida(100)
+                .setVelocidad(2.0f)
+                .setTamaño(120, 120)
+                .setTipo(2)
+                .build();
         } else {
-            return new JefeRonda3(new Texture(Gdx.files.internal("jefe3.png")), 150, 1.2f);
+            return new JefeBuilder()
+                .setTextura(new Texture(Gdx.files.internal("jefe3.png")))
+                .setVida(150)
+                .setVelocidad(1.2f)
+                .setTamaño(150, 150)
+                .setTipo(3)
+                .build();
         }
     }
 }

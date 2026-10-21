@@ -17,7 +17,7 @@ public abstract class PowerUp {
     }
 
     public void update() {
-        // Caída vertical constante hacia abajo
+        // Caida vertical constante hacia abajo
         spr.setY(spr.getY() - velocidadCaida);
     }
 

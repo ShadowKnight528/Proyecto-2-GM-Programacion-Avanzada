@@ -7,7 +7,7 @@ public class Jefe extends TemplateJefe {
     private float velocidadMovimiento;
     private float tiempoTotal = 0;
     private float tiempoDesdeUltimoDisparo = 0;
-    private float frecuenciaDisparo = 1.5f; // Espera más tiempo entre ráfagas
+    private float frecuenciaDisparo = 1.5f; // Espera mas tiempo entre rafagas
 
     public Jefe(Texture textura, int vida, float velocidadMovimiento) {
         super(textura, vida);
