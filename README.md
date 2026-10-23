@@ -7,3 +7,4 @@ Algunas consideraciones:
 * Para correr el juego se debe ejecutar la clase Lwjgl3Launcher.java ubicado en puppy.code.lwjgl3
 * El jugador se mueve con WASD y dispara con SPACE
 * El PowerUp de disparo laser se puede cargar manteniendo SPACE presionado durante un periodo corto de tiempo
+* Si se tiene alguna duda de como vencer al jefe, acá hay una demostración de como vencer a los tres tipos de jefe https://youtu.be/VdHjTq1AxLQ
